@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react'
 
 export default function Home() {
   const [stocks, setStocks] = useState([])
-  const [loading, setLoading] = useState(true)
+const [loading, setLoading] = useState(true)
+const [market, setMarket] = useState({ turnover: '...', shares: '...', transactions: '...' })
+
+useEffect(() => {
+  fetch('/api/market')
+    .then(res => res.json())
+    .then(data => setMarket(data))
+}, [])
 
   useEffect(() => {
     fetch('/api/stocks')
@@ -47,9 +54,9 @@ export default function Home() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "32px" }}>
           {[
             { label: "NEPSE Index", value: "2,243.15", change: "+12.3 (0.55%)", up: true },
-            { label: "Total Turnover", value: "Rs 3.24B", change: "+12.4% today", up: true },
-            { label: "Traded Shares", value: "8.9M", change: "2,341 trades", up: null },
-            { label: "Market Cap", value: "Rs 4.12T", change: "+0.8% today", up: true },
+{ label: "Total Turnover", value: `Rs ${market.turnover}`, change: "Live today", up: true },
+{ label: "Traded Shares", value: market.shares, change: `${market.transactions} trades`, up: null },
+{ label: "Market Cap", value: "Rs 4.12T", change: "+0.8% today", up: true },
           ].map((item, i) => (
             <div key={i} style={{ background: "#0d1526", border: "1px solid #1e2d4a", borderRadius: "12px", padding: "20px" }}>
               <div style={{ fontSize: "12px", color: "#8892a4", marginBottom: "8px" }}>{item.label}</div>

@@ -65,6 +65,26 @@ const plans = [
 
 export default function PricingPage() {
   const [yearly, setYearly] = useState(false)
+  async function payWithEsewa(plan: string) {
+  const res = await fetch('/api/payment/esewa', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan, userId: 'test-user-123' }),
+  })
+  const { params } = await res.json()
+  const form = document.createElement('form')
+  form.method = 'POST'
+  form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form'
+  Object.entries(params).forEach(([key, value]) => {
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = key
+    input.value = value as string
+    form.appendChild(input)
+  })
+  document.body.appendChild(form)
+  form.submit()
+}
 
   const getPrice = (price) => {
     if (price === 0) return 'Free'
@@ -153,15 +173,34 @@ export default function PricingPage() {
                 Rs {plan.price}/month billed yearly
               </div>
             )}
-
-            <button style={{
-              width: '100%', padding: '14px', borderRadius: '12px',
-              fontWeight: '700', fontSize: '16px', cursor: 'pointer',
-              marginTop: '16px', marginBottom: '28px',
-              ...plan.buttonStyle
-            }}>
-              {plan.button}
-            </button>
+     {plan.name === 'Free' ? (
+              <button style={{
+                width: '100%', padding: '14px', borderRadius: '12px',
+                fontWeight: '700', fontSize: '16px', cursor: 'pointer',
+                marginTop: '16px', marginBottom: '28px',
+                ...plan.buttonStyle
+              }}>
+                {plan.button}
+              </button>
+            ) : (
+              <button
+  onClick={() => payWithEsewa(plan.name.toLowerCase())}
+  style={{
+    width: '100%', padding: '12px', borderRadius: '12px',
+    cursor: 'pointer', marginTop: '16px', marginBottom: '28px',
+    background: '#fff', border: '2px solid #60BB46',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+  }}
+>
+  <svg width="28" height="28" viewBox="0 0 28 28">
+    <circle cx="14" cy="14" r="14" fill="#60BB46"/>
+    <text x="14" y="19" textAnchor="middle" fill="white" fontSize="16" fontFamily="Georgia, serif" fontStyle="italic">e</text>
+  </svg>
+  <span style={{ color: '#2d3748', fontWeight: '700', fontSize: '16px' }}>Pay with eSewa</span>
+</button>
+            )}
+         
+    
 
             <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '24px' }}>
               {plan.features.map((f, i) => (
