@@ -5,7 +5,7 @@ export default function AIAnalyst() {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [loading, setLoading] = useState(false)
-  const [history, setHistory] = useState([])
+  const [history, setHistory] = useState<{q: string, a: any}[]>([])
 
   const askAI = async () => {
     if (!question.trim()) return
