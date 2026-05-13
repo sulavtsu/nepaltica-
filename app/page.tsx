@@ -15,7 +15,7 @@ export default function Home() {
       })
   }, [])
 
-  const getChange = (stock) => {
+  const getChange = (stock: any) =>  {
     if (!stock.prices || stock.prices.length === 0) return 0
     const price = stock.prices[0]
     return (((price.close - price.open) / price.open) * 100).toFixed(2)
