@@ -1,32 +1,22 @@
 import { NextResponse } from 'next/server'
-import axios from 'axios'
 import { createClient } from '@supabase/supabase-js'
-
-
-
-
 
 export async function GET() {
   try {
     const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
-    
-    const res = await fetch("https://www.nepalstock.com/api/nots/nepse-data");
-const data = await res.json();
-
-console.log(data);
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-          'Referer': 'Referer: https://www.nepalstock.com',
-          'Accept': '*/*',
-        },
-        timeout: 10000
-      }
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )
 
+    const res = await fetch("https://www.nepalstock.com/api/nots/nepse-data", {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Referer': 'https://www.nepalstock.com',
+        'Accept': '*/*',
+      }
+    })
+
+    const data = await res.json()
     const stocks = data?.turnover?.detail || data?.detail || []
     const today = new Date().toISOString().split('T')[0]
     let saved = 0
