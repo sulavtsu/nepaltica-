@@ -2,11 +2,6 @@
 import { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -15,6 +10,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
 
   const handleAuth = async () => {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     setLoading(true)
     setMessage('')
     if (isSignUp) {
@@ -48,7 +47,6 @@ export default function LoginPage() {
         maxWidth: '420px',
         boxShadow: '0 25px 50px rgba(0,0,0,0.5)'
       }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
             fontSize: '36px',
@@ -64,7 +62,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Tabs */}
         <div style={{
           display: 'flex',
           background: 'rgba(255,255,255,0.05)',
@@ -88,7 +85,6 @@ export default function LoginPage() {
           ))}
         </div>
 
-        {/* Inputs */}
         <input
           type="email"
           placeholder="Email address"
@@ -126,7 +122,6 @@ export default function LoginPage() {
           }}
         />
 
-        {/* Button */}
         <button onClick={handleAuth} disabled={loading} style={{
           width: '100%',
           padding: '14px',
@@ -143,7 +138,6 @@ export default function LoginPage() {
           {loading ? 'Please wait...' : isSignUp ? 'Create Account' : 'Login'}
         </button>
 
-        {/* Message */}
         {message && (
           <p style={{
             marginTop: '16px',
