@@ -8,10 +8,10 @@ export async function GET() {
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )
 
-    const res = await fetch("https://www.nepalstock.com/api/nots/nepse-data", {
+    const res = await fetch(" https://merolagani.com/handlers/webrequesthandler.ashx?type=market_summary", {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        'Referer': 'https://www.nepalstock.com',
+        'Referer': 'https://merolagani.com',
         'Accept': '*/*',
       }
     })
