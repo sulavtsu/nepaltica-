@@ -1,32 +1,35 @@
 import { NextResponse } from 'next/server'
 
+const MEROLAGANI_URL = 'https://merolagani.com/handlers/webrequesthandler.ashx?type=market_summary'
+
 export async function GET() {
   try {
-    const res = await fetch(
-      'https://merolagani.com/handlers/webrequesthandler.ashx?type=market_summary',
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-          'Referer': 'https://merolagani.com/',
-          'Accept': '*/*',
-        }
-      }
-    )
-
-    const data = await res.json()
-    console.log('Market data:', JSON.stringify(data).slice(0, 200))
-
-    const turnover = parseFloat(data?.turnover || data?.TotalTurnover || 0)
-    const shares = parseInt(data?.totalShares || data?.TotalShares || 0)
-    const transactions = parseInt(data?.totalTransactions || data?.TotalTransactions || 0)
-
-    return NextResponse.json({
-      turnover: turnover > 0 ? (turnover / 1e9).toFixed(2) + 'B' : 'N/A',
-      shares: shares > 0 ? (shares / 1e6).toFixed(1) + 'M' : 'N/A',
-      transactions: transactions > 0 ? transactions.toLocaleString() : 'N/A',
+    const res = await fetch(MEROLAGANI_URL, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Referer': 'https://merolagani.com/',
+      },
+      next: { revalidate: 30 }
     })
 
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    const raw = await res.json()
+    const overall = raw.overall || {}
+
+    const turnover   = parseFloat(overall.t || 0)
+    const shares     = parseInt(overall.q || 0)
+    const transactions = parseInt(overall.tn || 0)
+
+    return NextResponse.json({
+  turnover:    (turnover / 1e9).toFixed(2) + 'B',
+  shares:      (shares / 1e6).toFixed(1) + 'M',
+  transactions: transactions.toLocaleString(),
+  index:       parseFloat(overall.ci || 0).toFixed(2),
+  indexChange: overall.cp ? `${overall.cp > 0 ? '+' : ''}${overall.cp}` : 'Live',
+  marketCap:   overall.mc ? 'Rs ' + (parseFloat(overall.mc) / 1e12).toFixed(2) + 'T' : '...',
+})
+
+  } catch (err) {
+    console.error('Market fetch failed:', err)
+    return NextResponse.json({ turnover: '-', shares: '-', transactions: '-' }, { status: 500 })
   }
 }
